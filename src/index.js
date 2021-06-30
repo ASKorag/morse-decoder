@@ -37,41 +37,42 @@ const MORSE_TABLE = {
   '-----': '0',
 }
 
-function decode(exp) {
-  let newExp = exp
-
-  const dozens = Math.ceil(newExp.length / 10)
-
-  let message = []
-
-  for (let i = 0; i < dozens; i++) {
-    let letter = ''
-    let subStr = newExp.slice(i * 10, (i + 1) * 10)
-    letter = getLetter(subStr, MORSE_TABLE)
-
-    message.push(letter)
-  }
-
-  return message.join('')
+const DIG_TABLE = {
+  10: '.',
+  11: '-',
 }
 
-function getLetter(exp, morseTable) {
+const LETTER_BASE = 10
+const MORSE_CODE_BASE = 2
+
+function decode(exp) {
+  const symbolAmount = exp.length / LETTER_BASE
+
+  let decodedMessage = []
+
+  for (let i = 0; i < symbolAmount; i++) {
+    let decodedLetter = ''
+    let encryptedLetter = exp.slice(i * LETTER_BASE, (i + 1) * LETTER_BASE)
+    decodedLetter = getLetter(encryptedLetter)
+    decodedMessage.push(decodedLetter)
+  }
+
+  return decodedMessage.join('')
+}
+
+function getLetter(exp) {
   if (exp === '**********') {
     return ' '
   } else {
     let letterCode = []
 
-    for (let k = 0; k < 5; k++) {
-      let substr = exp.slice(k * 2, (k + 1) * 2)
+    for (let i = 0; i < LETTER_BASE / MORSE_CODE_BASE; i++) {
+      let substr = exp.slice(i * MORSE_CODE_BASE, (i + 1) * MORSE_CODE_BASE)
 
-      if (substr === '10') {
-        letterCode.push('.')
-      } else if (substr === '11') {
-        letterCode.push('-')
-      }
+      letterCode.push(DIG_TABLE[substr])
     }
 
-    return morseTable[letterCode.join('')]
+    return MORSE_TABLE[letterCode.join('')]
   }
 }
 
